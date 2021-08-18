@@ -13,18 +13,27 @@
 		<script src="./leaflet/leaflet.groupedlayercontrol.min.js"></script>
 		<script src="./leaflet/jquery.min.js"></script>
 		<script src="./leaflet/leaflet.edgebuffer.js"></script>
+		<script src="./leaflet/geosearch.js"></script>
 		
 		<link rel="stylesheet" href="./leaflet/leaflet.css"/>
 		<link rel="stylesheet" href="./leaflet/easy-button.css"/>
 		<link rel="stylesheet" href="./leaflet/leaflet.groupedlayercontrol.min.css"/>
+		<link rel="stylesheet" href="./leaflet/geosearch.css"/>
 		<link href='https://css.gg/airplane.css' rel='stylesheet'>
 
 		<style>
 
+			@font-face {
+				font-family: "Roboto-Light";
+				src: url("/Fonts/Roboto-Light.ttf") format("truetype");
+				font-weight: normal;
+				font-style: normal;
+			}
+
 			body {
 				padding: 0;
 				margin: 0;
-				font-family: Arial !important;
+				font-family: "Roboto-Light";
 				background-color: white;
 			}	
 	
@@ -33,11 +42,11 @@
 			}
 	
 			html, body, #map {
-				height: 91vh;
+				height: 100%;
 				width: 100%;
 				font-weight: normal;
 				overflow: hidden;
-				font-family: Arial !important;
+				font-family: "Roboto-Light";
 				background-color: white;
 				z-index: 10;
 			}
@@ -50,10 +59,10 @@
 				right: 10px;
 				bottom: 80px;
 				background-color:white;
-				z-index: 1000;
+				z-index: 500;
 				border: 2px solid rgba(0,0,0,0.2);
     			background-clip: padding-box;
-				border-radius: 10px;
+				border-radius: 8px;
 				overflow: auto;
 			}
 
@@ -67,8 +76,12 @@
 				z-index: 1000;
 				border: 2px solid rgba(0,0,0,0.2);
     			background-clip: padding-box;
-				border-radius: 10px;
+				border-radius: 8px;
 				vertical-align: middle;
+			}
+
+			#keyb{
+				z-index: 2000;
 			}
 
 			#overlay ul{
@@ -87,7 +100,7 @@
 				color: lightgrey;
 				background-color: white;
 				border: 0;
-				border-radius: 10px;
+				border-radius: 8px;
 			}
 
 			#wpListClose:hover{
@@ -95,35 +108,111 @@
 			}
 
 			p{
-				font-family: Arial !important;
+				font-family: "Roboto-Light";
 				padding: 0;
 				margin: 0;
 			}
 
-			input .glass{
-				font-family: Arial !important;
+			.resaultLabel{
+				padding-bottom: 15px;
 			}
-	
+
+			.leaflet-control-geosearch a.leaflet-bar-part:before {
+				top: 19px;
+				left: 14px;
+				width: 10px;
+				border-top: 2px solid gray;
+				transform: rotateZ(
+					45deg
+				);
+			}
+
+			.leaflet-control-zoom-out{
+				border-top-left-radius: 0px;
+				border-top-right-radius: 0px;
+				border-bottom-left-radius: 4px;
+				border-bottom-right-radius: 4px;
+				background-color: white;
+			}
+
+			.leaflet-control-zoom-in{
+				border-top-left-radius: 4px;
+				border-top-right-radius: 4px;
+				border-bottom-left-radius: 0px;
+				border-bottom-right-radius: 0px;
+				background-color: white;
+			}
+
+			.leaflet-control-geosearch a.leaflet-bar-part:after {
+				top: 6px;
+				left: 6px;
+				height: 12px;
+				width: 12px;
+				border-radius: 50%;
+				border: 2px solid gray;
+			}
+
+			.leaflet-control-geosearch form {
+				display: none;
+				position: absolute;
+				top: 0;
+				left: 30px;
+				border-radius: 0 4px 4px 0;
+				background-color: #fff;
+				/* background-clip: padding-box; */
+				z-index: -1;
+				height: auto;
+				margin: 0;
+				padding: 0 8px;
+				box-shadow: 0px;
+				font-family: "Roboto-Light";
+			}
+
+			input .glass{
+				font-family: "Roboto-Light";
+			}
+
+			.leaflet-popup-content {
+				margin: 13px 19px;
+				line-height: 1.4;
+				/* min-width: 200px; */
+				display: contents;
+			}
+
+			.leaflet-popup-content-wrapper {
+				padding: 15px;
+				text-align: left;
+				border-radius: 8px;
+			}
+
+			.leaflet-popup-content p {
+				width: 100%;
+				text-align: center;
+				margin: 0;
+			}
+
+            .leaflet-control-scale-line{
+				border: 2px solid rgba(0,0,0,0.2);
+				border-radius: 4px;
+				background-color: #ffffff;
+			}
+
+			.leaflet-control-scale-line:not(:first-child) {
+				border: 2px solid rgba(0,0,0,0.2);
+			}
+
 			.leaflet-popup-close-button{
 				color: black;
-				font-family: Arial;
+				font-family: "Roboto-Light";
 			}
 	
 			.leaflet-geosearch-bar {
-				font-family: Arial !important;
+				font-family: "Roboto-Light";
 			}
 	
 			.leaflet-control-geosearch .results > * {
-				font-family: Arial !important;
+				font-family: "Roboto-Light";
 				color: black;
-			}
-	
-			.leaflet-popup-content {
-				margin: 5px 12px;
-				line-height: 1.4;
-				text-align: center;
-				font-family: Arial !important;
-				font-weight: normal;
 			}
 	
 			.leaflet-tooltip.my-labels {
@@ -132,9 +221,13 @@
 				box-shadow: none;
 				font-weight: normal;
 				font-size: 14px;
-				font-family: Arial !important;
+				font-family: "Roboto-Light";
 			}
 	
+			.quantityTeleport{
+				max-width: 5rem;
+			}
+
 			.triangle-up {
 				width: 0;
 				height: 0;
@@ -151,7 +244,7 @@
 				box-shadow: none;
 				font-weight: normal;
 				font-size: 20px;
-				font-family: Arial !important;
+				font-family: "Roboto-Light";
 				color: darkblue;
 				left: -32.5px;
 				bottom: -25px;
@@ -168,7 +261,7 @@
 				box-shadow: none;
 				font-weight: normal;
 				font-size: 20px;
-				font-family: Arial !important;
+				font-family: "Roboto-Light";
 				color: darkblue;
 				text-align: center;
 				min-width: 20px;
@@ -179,16 +272,16 @@
 
 			.leaflet-touch .leaflet-bar a {
 				color: gray;
-				font-family: Arial !important;
+				font-family: "Roboto-Light";
 			}
 			.leaflet-control-zoom-out .leaflet-control-zoom-in{
 				color: gray;
-				font-family: Arial !important;
+				font-family: "Roboto-Light";
 			}
 	
 			.leaflet-control-layers-expanded {
 				color: gray;
-				font-family: Arial !important;
+				font-family: "Roboto-Light";
 			}
 	
 			.leaflet-touch:hover .leaflet-bar a:hover {
@@ -201,7 +294,7 @@
 	
 			.leaflet-touch .leaflet-control-geosearch a.reset{
 				color: gray;
-				font-family: Arial !important;
+				font-family: "Roboto-Light";
 			}
 	
 			.leaflet-touch:hover .leaflet-control-geosearch a.reset:hover{
@@ -210,12 +303,22 @@
 	
 			.leaflet-control-geosearch form input {
 				background-color: white;
+				height: 30px;
 			}
 	
 			.leaflet-popup-content p {
 				width: 100%;
 				text-align: center;
 				margin: 0;
+			}
+
+			.leaflet-bar a:last-child {
+				border-bottom: none;
+			}
+
+			.leaflet-touch .leaflet-bar a:last-child {
+				border-bottom-left-radius: 4px;
+				border-bottom-right-radius: 4px;
 			}
 			
 			.gg-track {
@@ -366,7 +469,9 @@
 
 			td{
 				margin: 0;
-				padding: 0;
+				padding: 5px;
+				font-size: larger;
+				text-align: center;
 			}
 
 			input[type="number"] {
@@ -389,6 +494,8 @@
 			.number-input,
 			.number-input * {
 				box-sizing: border-box;
+				width: 100%;
+				width: 100%;
 			}
 
 			.number-input button {
@@ -421,9 +528,9 @@
 			}
 
 			.number-input input[type=text] {
-				font-family: arial;
-				max-width: 5rem;
+				font-family: "Roboto-Light";
 				padding: .5rem;
+				min-width: 5rem;
 				border: solid #ddd;
 				border-width: 0 2px;
 				font-size: 0.9rem;
@@ -433,12 +540,17 @@
 				background-color: #ffffff;
 			}
 
+			.button{
+				margin: 10px;
+			}
+
 			.teleportButton{
 				color: black;
-				width: 80px;
-				margin: 3px 10px;
+				width: 100%;
+				margin-top: 10px;
+				margin-bottom: 10px;
 				padding: 0;
-				font-family: Arial !important;
+				font-family: "Roboto-Light";
 				font-weight: normal;
 				background-color: #ffffff;
 				border: solid #ddd;
@@ -447,12 +559,18 @@
 				font-size: 0.9rem;
 			}
 
+			.searchboxTable{
+				display: contents;
+				width: 100%;
+			}
+
 			.marker-delete-button{
 				color: black;
-				width: 100px;
-				margin: 3px 10px;
+				width: 100%;
+				margin-top: 10px;
+				margin-bottom: 10px;
 				padding: 0;
-				font-family: Arial !important;
+				font-family: "Roboto-Light";
 				font-weight: normal;
 				background-color: #ffffff;
 				border: solid #ddd;
@@ -462,45 +580,45 @@
 			}
 
 			.gg-erase {
-			color: gray;
-			box-sizing: border-box;
-			position: relative;
-			display: block;
-			transform: scale(var(--ggs,1));
-			width: 22px;
-			height: 18px;
-			left: -6px;
-			top: 3px;
+				color: gray;
+				box-sizing: border-box;
+				position: relative;
+				display: block;
+				transform: scale(var(--ggs,1));
+				width: 22px;
+				height: 18px;
+				left: -6px;
+				top: 3px;
 			}
 
 			.gg-erase::after,
 			.gg-erase::before {
-			content: "";
-			display: block;
-			box-sizing: border-box;
-			position: absolute
+				content: "";
+				display: block;
+				box-sizing: border-box;
+				position: absolute
 			}
 
 			.gg-erase::before {
-			width: 6px;
-			height: 14px;
-			border-bottom:
-			4px solid transparent;
-			border-radius: 1px;
-			box-shadow:
-			0 0 0 2px,
-			inset 0 -2px 0 0;
-			left: 7px;
-			top: 2px;
-			transform: rotate(45deg)
+				width: 6px;
+				height: 14px;
+				border-bottom:
+				4px solid transparent;
+				border-radius: 1px;
+				box-shadow:
+				0 0 0 2px,
+				inset 0 -2px 0 0;
+				left: 7px;
+				top: 2px;
+				transform: rotate(45deg)
 			}
 
 			.gg-erase::after {
-			background: currentColor;
-			width: 22px;
-			height: 2px;
-			bottom: 0;
-			border-radius: 20px
+				background: currentColor;
+				width: 22px;
+				height: 2px;
+				bottom: 0;
+				border-radius: 20px
 			} 
 
 			.gg-edit-markup {
@@ -518,6 +636,7 @@
 				left: -6px;
 				top: 2px;
 			}
+
 			.gg-edit-markup::after,
 			.gg-edit-markup::before {
 				content: "";
@@ -525,6 +644,7 @@
 				position: absolute;
 				box-sizing: border-box
 			}
+
 			.gg-edit-markup::before {
 				width: 0;
 				height: 6px;
@@ -534,6 +654,7 @@
 				bottom: 9px;
 				left: 6px
 			}
+
 			.gg-edit-markup::after {
 				width: 10px;
 				height: 12px;
@@ -557,12 +678,14 @@
 				left: -4px;
 				top: 3px;
 			}
+
 			.gg-globe-alt {
 				position: relative;
 				transform: scale(var(--ggs,1));
 				width: 18px;
 				border-radius: 22px
 			}
+
 			.gg-globe-alt::after,
 			.gg-globe-alt::before {
 				content: "";
@@ -572,6 +695,7 @@
 				top: -2px;
 				left: 3px
 			}
+
 			.gg-globe-alt::after {
 				width: 24px;
 				height: 20px;
@@ -600,6 +724,7 @@
 				border-bottom-right-radius: 1px;
 				margin-top: 4px
 			}
+
 			.gg-trash::after,
 			.gg-trash::before {
 				content: "";
@@ -607,6 +732,7 @@
 				box-sizing: border-box;
 				position: absolute
 			}
+
 			.gg-trash::after {
 				background: currentColor;
 				border-radius: 3px;
@@ -615,6 +741,7 @@
 				top: -4px;
 				left: -5px
 			}
+
 			.gg-trash::before {
 				width: 10px;
 				height: 4px;
@@ -659,6 +786,7 @@
 					) no-repeat 0 0/6px 6px;
 
 			}
+
 			.gg-attribution::after,
 			.gg-attribution::before {
 				content: "";
@@ -669,6 +797,7 @@
 				height: 8px;
 				border: 2px solid;
 			}
+
 			.gg-attribution::before {
 				border-right: 0;
 				border-top-left-radius: 10px;
@@ -676,6 +805,7 @@
 				top: 8px;
 				left: 2px
 			}
+
 			.gg-attribution::after {
 				border-left: 0;
 				border-top-right-radius: 10px;
@@ -698,6 +828,7 @@
 				border: 2px solid;
 				margin-top: -4px
 			}
+			
 			.gg-pin::before {
 				content: "";
 				display: block;
@@ -711,11 +842,104 @@
 				border-radius: 40px
 			}
 
+			:root {
+				--light:#357987; 
+				--dark:#035869; 
+				--fontLight: #ffffff; 
+				--fontDark: #000000;
+				}
+
+			.keyboard {
+				position: absolute;
+				left: 0;
+				bottom: 0;
+				width: 100%;
+				height: auto;
+				padding: 0.5vw 0;
+				background: var(--dark);
+				box-shadow: 0 0 50px rgba(0, 0, 0, 0.5);
+				user-select: none;
+				display: inline-flex;
+				z-index: 2000;
+			}
+
+			.keyboard__keys {
+				text-align: center;
+			}
+
+			.keyboard__key {
+				height: 4vh;
+				width: 6vw;
+				max-width: 90vw;
+					min-height: 10PX;
+   					min-width: 10px;
+				margin: 0.3vw;
+				border-radius: 0.4vw;
+				border: none;
+				background: var(--light);
+				color: var(--fontLight);
+				font-size: 2.5vw;
+				outline: none;
+				cursor: pointer;
+				display: inline-flex;
+				align-items: center;
+				justify-content: center;
+				vertical-align: top;
+				padding: 0;
+				-webkit-tap-highlight-color: transparent;
+				position: relative;
+			}
+
+			.keyboard__key:active {
+				background: rgba(255, 255, 255, 0.12);
+			}
+
+			.keyboard__key--wide {
+				width: 12vw;
+			}
+
+			.keyboard__key--spezial {
+				width: 30vw;
+				max-width: 15vw;
+			}
+			.keyboard__key--extra-wide {
+				width: 36vw;
+				max-width: 50vw;
+			}
+			.keyboard__key--activatable::after {
+				content: '';
+				top: 20%;
+				right: 8%;
+				position: absolute;
+				width: 0.8vw;
+				height: 0.8vw;
+				background: rgba(0, 0, 0, 0.4);
+				border-radius: 50%;
+				margin: -0.3vw;
+			}
+
+			.keyboard--hidden {
+				bottom: -100%;
+			}
+
+			.keyboard__key--active::after {
+				background: #08ff00;
+				margin: -0.3vw;
+			}
+
+			.keyboard__key--dark {
+				background: rgba(0, 0, 0, 0.25);
+			}
+
+			.keybord__key--clear{
+				background: rgba(255, 0, 0, 0.363);
+			}
+
 		  </style>
 	</head>
 
 	<body id="documentBody">
-		<div id="map"></div>
+		<div id="map"><div id="keyb">&nbsp;</div></div>
 		<div id="overlay"><button id="wpListClose" type="button" onclick="hideWpList()">x</button><h3 style = 'font-size: 5; text-align: center; padding-top: 10px; margin-bottom: -20px;'>Flightplan</h3><ul></ul></div>
 		<div id="overlay2"><button id="wpListClose" type="button" onclick="hideWpList()">x</button><h3 style = 'font-size: 5; text-align: center; margin-bottom: 10px;'>Heading:</h3></div>
 
@@ -757,11 +981,17 @@
 		var bearing;
 		var middleMarkers;
 		var headings = [];
-		var startlineShow = true;
+		var startlineShow = false;
 		var altitudes= [];
 		var activeWP;
 		var distances = [];
 		var deleted = false;
+		var wpNum = 0;
+		var geosearchLat;
+		var geosearchLng;
+		var AlgoliaProvider;
+		var provider;
+		var GeoSearchControl;
 
 		window.addEventListener("DOMContentLoaded", function() {
 			loadMap(47.50737, 19.04611);
@@ -769,125 +999,173 @@
 			var messageElement = document.getElementById('message');
 			// Register the event listener
 			window.addEventListener('message', receiveMessage);
+			Keyboard.init();
 		});
-		
+
 		function loadMap(lat, lon){
 
-			// Create Leaflet map on map element.
+		// Create Leaflet map on map element.
 
-			var initMapCenter = [47.442, 8.23];
-			var initMapZoom = 8;
-			var southWest = new L.LatLng(-90, -180),
-            northEast = new L.LatLng(90, 180),
-            maxExtent = new L.LatLngBounds(southWest, northEast);
+		var initMapCenter = [47.442, 8.23];
+		var initMapZoom = 10;
+		var southWest = new L.LatLng(-90, -180),
+		northEast = new L.LatLng(90, 180),
+		maxExtent = new L.LatLngBounds(southWest, northEast);
 
-			var streets = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {attribution: '&copy; <a href="http://openstreetmap.org/copyright">OpenStreetMap</a>',
-					maxZoom: 18,
-					minZoom: 4,
-					format: 'image/png',
-					transparent: true,
-					subdomains: ['a', 'b', 'c']
-				});
+		var streets = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {attribution: '&copy; <a href="http://openstreetmap.org/copyright">OpenStreetMap</a>',
+				maxZoom: 18,
+				minZoom: 4,
+				format: 'image/png',
+				transparent: true,
+				subdomains: ['a', 'b', 'c']
+			});
 
-			var monochrome = L.tileLayer('http://{s}.tile.stamen.com/toner/{z}/{x}/{y}.{ext}', {attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, under <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>. Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, under <a href="http://www.openstreetmap.org/copyright">ODbL</a>.',
-					ext: 'png',
-					minZoom: 0,
-					maxZoom: 14,
-					subdomains: 'abcd'
-				});
-
-			var terrain = L.tileLayer('http://{s}.tile.stamen.com/terrain/{z}/{x}/{y}.{ext}', {attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, under <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>. Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, under <a href="http://www.openstreetmap.org/copyright">ODbL</a>.',	
-					ext: 'png',
-					minZoom: 0,
-					maxZoom: 14,
-					subdomains: 'abcd'
-				});
-
-			var water = L.tileLayer('http://{s}.tile.stamen.com/watercolor/{z}/{x}/{y}.{ext}', 
-					{attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, under <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>. Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, under <a href="http://creativecommons.org/licenses/by-sa/3.0">CC BY SA</a>.',
-					ext: 'png',
-					minZoom: 0,
-					maxZoom: 14,
-					subdomains: 'abcd'
-				});
-
-			var airspaces = L.tileLayer('http://{s}.tile.maps.openaip.net/geowebcache/service/tms/1.0.0/openaip_basemap@EPSG%3A900913@png/{z}/{x}/{y}.{ext}', {
-					attribution: '<a href="https://www.openaip.net/">openAIP Data</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-NC-SA</a>)',
-					ext: 'png',
-					maxZoom: 12,
-					minZoom: 8,
-					tms: true,
-					detectRetina: true,
-					subdomains: '12',
-					format: 'image/png',
-					transparent: true
-				});
-
-			var openaip_cached_hotspot = new L.TileLayer('http://{s}.tile.maps.openaip.net/geowebcache/service/tms/1.0.0/openaip_approved_hotspots@EPSG%3A900913@png/{z}/{x}/{y}.png', {
+		var monochrome = L.tileLayer('http://{s}.tile.stamen.com/toner/{z}/{x}/{y}.{ext}', {attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, under <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>. Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, under <a href="http://www.openstreetmap.org/copyright">ODbL</a>.',
+				ext: 'png',
+				minZoom: 0,
 				maxZoom: 14,
-				minZoom: 10,
+				subdomains: 'abcd'
+			});
+
+		var terrain = L.tileLayer('http://{s}.tile.stamen.com/terrain/{z}/{x}/{y}.{ext}', {attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, under <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>. Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, under <a href="http://www.openstreetmap.org/copyright">ODbL</a>.',	
+				ext: 'png',
+				minZoom: 0,
+				maxZoom: 14,
+				subdomains: 'abcd'
+			});
+
+		var water = L.tileLayer('http://{s}.tile.stamen.com/watercolor/{z}/{x}/{y}.{ext}', 
+				{attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, under <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>. Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, under <a href="http://creativecommons.org/licenses/by-sa/3.0">CC BY SA</a>.',
+				ext: 'png',
+				minZoom: 0,
+				maxZoom: 14,
+				subdomains: 'abcd'
+			});
+
+		var airspaces = L.tileLayer('http://{s}.tile.maps.openaip.net/geowebcache/service/tms/1.0.0/openaip_basemap@EPSG%3A900913@png/{z}/{x}/{y}.{ext}', {
+				attribution: '<a href="https://www.openaip.net/">openAIP Data</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-NC-SA</a>)',
+				ext: 'png',
+				maxZoom: 12,
+				minZoom: 8,
 				tms: true,
 				detectRetina: true,
 				subdomains: '12',
 				format: 'image/png',
 				transparent: true
 			});
-			
 
-			var none = L.tileLayer('http://{s}./{z}/{x}/{y}.{ext}', {
-					ext: 'png',
-					tms: true,
-					minZoom: 100,
-					maxZoom: 100,
-					});
+		var openaip_cached_hotspot = new L.TileLayer('http://{s}.tile.maps.openaip.net/geowebcache/service/tms/1.0.0/openaip_approved_hotspots@EPSG%3A900913@png/{z}/{x}/{y}.png', {
+			maxZoom: 14,
+			minZoom: 10,
+			tms: true,
+			detectRetina: true,
+			subdomains: '12',
+			format: 'image/png',
+			transparent: true
+		});
 
-			var baseMaps = {
-				"Streets": streets,
-				"Monochrome": monochrome,
-				"Terrain": terrain,
-				"Water": water
-			}
 
-			var groupedOverlays = {
-				"Airspaces" : {
-					'On': airspaces,
-					'Off': none
-				},
-			};
+		var none = L.tileLayer('http://{s}./{z}/{x}/{y}.{ext}', {
+				ext: 'png',
+				tms: true,
+				minZoom: 100,
+				maxZoom: 100,
+				});
 
-			var baseMaps = {
-				"Streets": streets,
-				"Monochrome": monochrome,
-				"Terrain": terrain,
-				"Water": water
-			}
+		var baseMaps = {
+			"Streets": streets,
+			"Monochrome": monochrome,
+			"Terrain": terrain,
+			"Water": water
+		}
 
-			var groupedOverlays = {
-				"Airspaces" : {
-					'On': airspaces,
-					'Off': none
-				},
-			};
+		var groupedOverlays = {
+			"Airspaces" : {
+				'On': airspaces,
+				'Off': none
+			},
+		};
 
-			var options = {
-				// Make the "Landmarks" group exclusive (use radio inputs)
-				exclusiveGroups: ["Airspaces"],
-				// Show a checkbox next to non-exclusive group labels for toggling all
-				groupCheckboxes: true
-			};
+		var baseMaps = {
+			"Streets": streets,
+			"Monochrome": monochrome,
+			"Terrain": terrain,
+			"Water": water
+		}
 
-			// Where you want to render the map.
-			var element = document.getElementById('map');
+		var groupedOverlays = {
+			"Airspaces" : {
+				'On': airspaces,
+				'Off': none
+			},
+		};
 
-			var openaip_basemap_osm = L.featureGroup([streets, airspaces, openaip_cached_hotspot]);
+		var options = {
+			// Make the "Landmarks" group exclusive (use radio inputs)
+			exclusiveGroups: ["Airspaces"],
+			// Show a checkbox next to non-exclusive group labels for toggling all
+			groupCheckboxes: true
+		};
 
-			map = L.map('map', {
-				center: [49.47211425492292, 9.040833186453408],
-				zoom: 8,
-				edgeBufferTiles: 5,
-				layers: [openaip_basemap_osm],
-				bounds: maxExtent
+		// Where you want to render the map.
+		var element = document.getElementById('map');
+
+		var openaip_basemap_osm = L.featureGroup([streets, airspaces, openaip_cached_hotspot]);
+
+		map = L.map('map', {
+			center: [49.47211425492292, 9.040833186453408],
+			zoom: 8,
+			edgeBufferTiles: 3,
+			layers: [openaip_basemap_osm],
+			bounds: maxExtent
+		});
+
+		L.control.scale({maxWidth: 100}).addTo(map);
+
+			GeoSearchControl = window.GeoSearch.GeoSearchControl;
+			AlgoliaProvider = window.GeoSearch.AlgoliaProvider;
+			provider = new AlgoliaProvider({});
+
+			//  Define search controls
+			var searchControl = new GeoSearchControl({
+					provider: provider,
+					autoComplete: true,
+					autoCompleteDelay: 250,
+					style: 'button',
+					showMarker: true,
+					showPopup: true,
+					popupFormat: ( { query, result}) => "<table class='searchboxTable'><tr><td><p style='font-size: 1.5rem'>Teleport<p></td></tr><tr><td class='resaultLabel'>"+ result.label + "</td></tr><tr><td style='text-align:left; padding:0; font-size: 14px'><p style='text-align: left'>&nbsp;Altitude (ft): </p></td></tr><tr><td><div class='number-input'><button onclick='altitudeDwn()'></button><input id='altitudeInput' class='quantity' min='0' name='quantity' value= " + Math.round(altitude) + " type='text'><button onclick='altitudeUp()' class='plus'></button></div></td></tr><tr><td style='text-align:left; padding:0; font-size: 14px'><p style='text-align: left'>&nbsp;Heading (deg): </p></td><tr><td><div class='number-input'><button onclick='headingDwn()'></button><input id='headingInput' class='quantity' min='0' name='quantity' value= " + Math.round(heading) + " type='text'><button onclick='headingUp()' class='plus'></button></div></td></tr><tr><td style='text-align:left; padding:0; font-size: 14px'><p style='text-align: left'>&nbsp;Airspeed (kt): </p></td></tr><tr><td><div class='number-input'><button onclick='speedDwn()'></button><input id='speedInput' class='quantity' min='0' name='quantity' value= " + Math.round(speed) + " type='text'><button onclick='speedUp()' class='plus'></button></div></td></tr><br><tr><td><span style='margin-top: 15px'><button class='teleportButton' type='button' onclick='geoTeleport()'>OK</button></span></td></tr></table></div></div>", // optional: function    - default returns result label,			
+					autoClose: true,
+					keepResult: false,
+					retainZoomLevel: true,
+					animateZoom: true,
+					updateMap: true,
+					marker: {
+					draggable: true,
+				}
 			});
+		
+			// Add searchbar to the map
+			map.addControl(searchControl);
+
+			/* Create new layer for markers  */
+
+			map.on('geosearch/showlocation', function(e) {
+				disableFollow();
+				geosearchLat = e.location.x;
+				geosearchLng = e.location.y;
+				loadMap(e.location.y, e.location.x)
+			});
+
+			function disableFollow(){
+				polylinepoints = [];
+				polyline = [];
+				follow = false;
+				toggle.enable();
+				if (map.hasLayer(polyline)) {
+					map.removeLayer(polyline);
+				}
+			}
 
 			function reloadImg() { // reload image by changing its src
 				var src = $(this).attr("src");
@@ -919,7 +1197,7 @@
 					map.removeLayer(newMarker);
 				} else {
 					newMarker = new L.marker(e.latlng).addTo(map);
-					newMarker.bindPopup("<table><tr><td><p style='font-size: 1.5rem'>Teleport<p></td></tr><tr><td style='text-align:left; padding:0; font-size: 14px'>&nbsp;Altitude (ft): </td></tr><tr><td><div class='number-input'><button onclick='altitudeDwn()'></button><input id='altitudeInput' class='quantity' min='0' name='quantity' value= " + Math.round(altitude) + " type='text'><button onclick='altitudeUp()' class='plus'></button></div></td></tr><tr><td style='text-align:left; padding:0; font-size: 14px'>&nbsp;Heading (deg): </td><tr><td><div class='number-input'><button onclick='headingDwn()'></button><input id='headingInput' class='quantity' min='0' name='quantity' value= " + Math.round(heading) + " type='text'><button onclick='headingUp()' class='plus'></button></div></td></tr><tr><td style='text-align:left; padding:0; font-size: 14px'>&nbsp;Airspeed (kt): </td></tr><tr><td><div class='number-input'><button onclick='speedDwn()'></button><input id='speedInput' class='quantity' min='0' name='quantity' value= " + Math.round(speed) + " type='text'><button onclick='speedUp()' class='plus'></button></div></td></tr><br><tr><td><span style='margin-top: 15px'><button style='margin-top:10px; text-align: center' class='teleportButton' onclick='teleport(" + e.latlng.lat + "," + e.latlng.lng + ")' >OK</button></span></td></tr></table>").openPopup();
+					newMarker.bindPopup("<table><tr><td><p style='font-size: 1.5rem'>Teleport<p></td></tr><tr><td style='text-align:left; padding:0; font-size: 14px'><p style='text-align: left'>&nbsp;Altitude (ft): </p></td></tr><tr><td><div class='number-input'><button onclick='altitudeDwn()'></button><input id='altitudeInput' class='quantityTeleport' min='0' name='quantity' value= " + Math.round(altitude) + " type='text'><button onclick='altitudeUp()' class='plus'></button></div></td></tr><tr><td style='text-align:left; padding:0; font-size: 14px'><p style='text-align: left'>&nbsp;Heading (deg): </p></td><tr><td><div class='number-input'><button onclick='headingDwn()'></button><input id='headingInput' class='quantityTeleport' min='0' name='quantity' value= " + Math.round(heading) + " type='text'><button onclick='headingUp()' class='plus'></button></div></td></tr><tr><td style='text-align:left; padding:0; font-size: 14px'><p style='text-align: left'>&nbsp;Airspeed (kt): </p></td></tr><tr><td><div class='number-input'><button onclick='speedDwn()'></button><input id='speedInput' class='quantityTeleport' min='0' name='quantity' value= " + Math.round(speed) + " type='text'><button onclick='speedUp()' class='plus'></button></div></td></tr><br><tr><td><span style='margin-top: 15px'><button style='margin-top:10px; text-align: center' class='teleportButton' onclick='teleport(" + e.latlng.lat + "," + e.latlng.lng + ")' >OK</button></span></td></tr></table>").openPopup();
 					var slides = document.getElementsByClassName("leaflet-popup-close-button");
 					for (var i = 0; i < slides.length; i++) {
 						slides[i].innerHTML = '<span>x</font>';
@@ -933,7 +1211,8 @@
 					var marker;
 					deleted = false;
 					document.getElementById("overlay").style.display= 'block' ;
-					document.getElementById("overlay2").style.display= 'block' ;			
+					//document.getElementById("overlay2").style.display= 'block' ;
+					$(".leaflet-geosearch-bar").css('top', 0);			
 					//console.log(geojsonFeature.length);
 					//// hier ändern .....
 					geojsonFeature = {
@@ -966,18 +1245,14 @@
 							return marker;
 						}
 					}).addTo(map);
-				
+					
 					coordinates.push(e.latlng);
-					///markers.addLayer(marker);
-
 					const popup = L.popup({
 						closeOnClick: false,
 						autoClose: true,	
 					});
-					popup.setContent("<table><tr><td><p style='font-size: 1.5rem'>WP"+ (coordinatesArray.length+1) +"<p></td></tr><tr><td style='text-align:left; padding:0; font-size: 14px'>&nbsp;Altitude (ft): </td></tr><tr><td><div class='number-input'; onchange='setWPaltitude2();'><button onclick='WPaltitudeDwn()' ondblclick='WPaltitudeDwnDwn()'></button><input id='WPaltitudeInput' class='quantity' min='0' name='WPaltitudeInput' value=0 type='text'><button onclick='WPaltitudeUp()' ondblclick='WPaltitudeUpUp()' class='plus'></button></div></td></tr><br><tr><td><span style='margin-top: 15px'><button style='margin-top:10px; text-align: center' class='marker-delete-button' onclick='' >Delete</button></span></td></tr></table>");
+					popup.setContent("<table><tr><td><p style='font-size: 1.5rem'>WP"+ (coordinatesArray.length+1) +"<p></td></tr><tr><td style='text-align:left; padding:0; font-size: 14px'><p style='text-align: left'>Altitude (ft): </p></td></tr><tr><td><div class='number-input'; onchange='setWPaltitude2();'><button onclick='WPaltitudeDwn()' ondblclick='WPaltitudeDwnDwn()'></button><input id='WPaltitudeInput' class='quantityTeleport' min='0' name='WPaltitudeInput' value=0 type='text'><button onclick='WPaltitudeUp()' ondblclick='WPaltitudeUpUp()' class='plus'></button></div></td></tr><br><tr><td><span style='margin-top: 15px'><button style='margin-top:10px; text-align: center' class='marker-delete-button' onclick='' >Delete</button></span></td></tr></table>");
 					//}).setContent("<table><tr><td><p style='font-size: 1.5rem'>WP"+ coordinates.length +"<p></td></tr><tr><td><span style='margin-top: 15px'><button style='margin-top:10px; text-align: center' class='marker-delete-button' onclick='' >Delete</button></span></td></tr></table>");
-
-
 					marker.bindPopup(popup);
 					marker.on("popupopen", onPopupOpen);
 					marker.on("click", function(e){
@@ -986,13 +1261,19 @@
 						showWpList();
 						//console.log(marker.feature.id);
 					});
+
+					if (targetMarker == 0){
+						startlineShow = true;
+						showWpList();
+					};
+
 					////var group = new L.featureGroup(markerArray);//getting 'getBounds() not a function error.
 					////map.fitBounds(group.getBounds());			
 					//coordinates = [];	
 					var points = getJSON('clickedPoints');
-					//console.log(points);
 					follow = false;
 					toggle.enable();
+					//console.log(points);
 					map.closePopup();
 					marker.openPopup();
 					coordinatesArray = [];
@@ -1071,9 +1352,6 @@
 								var alt = altitudes[activeWP];
 								$('input[name="WPaltitudeInput"]').val(alt);
 							}
-							else{
-								//$('input[name="WPaltitudeInput"]').val(0);
-							}
 						}
 				}
 
@@ -1105,24 +1383,24 @@
 								//console.log(bearing2)						
 								if (altitudes[overlayi]){
 									if (Math.round(bearing2) <10){
-										$('#overlay > ul').append('<p style="color:rgb(41,129,202)">00' + Math.round(bearing2)+ ' <sup>o</sup> - <a style="color:red">' + parseFloat(altitudes[overlayi]) +' ft</a></p> ');
+										$('#overlay > ul').append('<p style="color:rgb(41,129,202)">00' + Math.round(bearing2)+ ' ° - <a style="color:red">' + parseFloat(altitudes[overlayi]) +' ft</a></p> ');
 									}	
 									else if (Math.round(bearing2) <100){
-										$('#overlay > ul').append('<p style="color:rgb(41,129,202)">0' + Math.round(bearing2) + ' <sup>o</sup> - <a style="color:red">' + parseFloat(altitudes[overlayi]) +' ft</a></p> ');
+										$('#overlay > ul').append('<p style="color:rgb(41,129,202)">0' + Math.round(bearing2) + ' ° - <a style="color:red">' + parseFloat(altitudes[overlayi]) +' ft</a></p> ');
 									}
 									else{
-										$('#overlay > ul').append('<p style="color:rgb(41,129,202)">' + Math.round(bearing2) + ' <sup>o</sup> - <a style="color:red">' + parseFloat(altitudes[overlayi]) +' ft</a></p> ');
+										$('#overlay > ul').append('<p style="color:rgb(41,129,202)">' + Math.round(bearing2) + ' ° - <a style="color:red">' + parseFloat(altitudes[overlayi]) +' ft</a></p> ');
 									}
 								}
 								else{
 									if (Math.round(bearing2) <10){
-										$('#overlay > ul').append('<p style="color:rgb(41,129,202)">00' + Math.round(bearing2) +' <sup>o</sup> - <a style="">0 ft</a></p> ');
+										$('#overlay > ul').append('<p style="color:rgb(41,129,202)">00' + Math.round(bearing2) +' ° - <a style="">0 ft</a></p> ');
 									}	
 									else if (Math.round(bearing2) <100){
-										$('#overlay > ul').append('<p style="color:rgb(41,129,202)">0' + Math.round(bearing2)  + ' <sup>o</sup> - <a style="">0 ft</a></p> ');
+										$('#overlay > ul').append('<p style="color:rgb(41,129,202)">0' + Math.round(bearing2)  + ' ° - <a style="">0 ft</a></p> ');
 									}
 									else{
-										$('#overlay > ul').append('<p style="color:rgb(41,129,202)">' + Math.round(bearing2)  + ' <sup>o</sup> - <a style="">0 ft</a></p> ');
+										$('#overlay > ul').append('<p style="color:rgb(41,129,202)">' + Math.round(bearing2)  + ' ° - <a style="">0 ft</a></p> ');
 									}
 								}
 								$('#overlay > ul').append('<li  href="#" class="target" id="' + overlayi + '">WP '+ (overlayi+1) + ' ' + '<a href="#" class="" id="' + overlayi + ' "></a></li>');
@@ -1156,6 +1434,7 @@
 								}
 							startlineShow = true;
 							document.getElementById("overlay2").style.display= 'block' ;
+							$(".leaflet-geosearch-bar").css('top', 72);
 						}
 						else{
 							if (targetMarker == event.target.id && secondclick == false){
@@ -1166,6 +1445,7 @@
 								}
 								startlineShow = false;
 								document.getElementById("overlay2").style.display= 'none' ;
+								$(".leaflet-geosearch-bar").css('top', 0);
 							}
 							else if (targetMarker == event.target.id && secondclick == true){
 								localStorage.setItem('targetMarker', event.target.id);
@@ -1181,6 +1461,7 @@
 								}
 								startlineShow = true;
 								document.getElementById("overlay2").style.display= 'block' ;
+								$(".leaflet-geosearch-bar").css('top', 72);
 							}
 						}
 						map.closePopup();
@@ -1266,11 +1547,11 @@
 					if (altitudes[target] && startlineShow == true){
 						alt = parseFloat(altitudes[target]);
 					}
-					//alt = parseFloat(altitudes[0]);
-					$('#overlay2 > h3').html('Heading: '+ heading.toFixed(0) + ' <sup>o</sup>&nbsp;&nbsp;I&nbsp;&nbsp;Distance: ' + distance2.toFixed(2) +' nm'+ '&nbsp;&nbsp;I&nbsp;&nbsp;Altitude: ' + alt.toFixed(0) +' ft');
+
+					
+					$('#overlay2 > h3').html('Heading: '+ heading.toFixed(0) + '°&nbsp;&nbsp;I&nbsp;&nbsp;Distance: ' + distance2.toFixed(2) +' nm'+ '&nbsp;&nbsp;I&nbsp;&nbsp;Altitude: ' + alt.toFixed(0) +' ft');
 					distance = calculateDistance(nlat,nlng,nwp1_lat,nwp1_lng, 'K');					
-					if (distance <= 1){
-						//$('#overlay > ul').append('<li  href="#" class="target" id="' + i + '">WP '+ distance + ' ' + '<a href="#" class="" id="' + ' "></a></li>');						
+					if (distance <= 1){				
 						if (startlineShow == true){
 							targetMarker++;
 							localStorage.setItem('targetMarker', targetMarker);
@@ -1284,10 +1565,6 @@
 								}
 							}
 						}
-					}
-					else{
-						//$('#overlay > ul').append('<li  href="#" class="target" id="' + i + '">WP '+ distance + ' ' + '<a href="#" class="" id="' + ' "></a></li>');						
-
 					}
 				}
 			}
@@ -1444,7 +1721,7 @@
 						}
 						waypointmode = true;
 						loadPoints();
-						if (deleted == false){
+						if (wpNum > 0){
 							showWpList();
 						}
 				},
@@ -1455,6 +1732,8 @@
 
 			toggle3 = L.easyButton('gg-trash', function() {
 				removeAllMarkers();
+				var x = document.getElementById("keyboard");
+				x.style.display = "none";
 			}).addTo(map);
 
 			function removeAllMarkers(){
@@ -1484,8 +1763,6 @@
 							map.addLayer(polyline);
 						}
 					}
-					//map.addLayer(polyline);
-
 					window.localStorage.setItem("altitudes", JSON.stringify(altitudes));
 					localStorage.setItem('targetMarker', 0);
 					deleteAllMarkers();	
@@ -1536,6 +1813,7 @@
 
 		function loadPoints(){
 			var coordinates = getJSON('clickedPoints');
+			wpNum = 0;
 			if (coordinates){
 				targetMarker = 0;
 				var i = 0;
@@ -1544,6 +1822,7 @@
 						latlng: L.latLng(coordinates[i])
 					});
 					i++;
+					wpNum++;
 				});
 				if (coordinates.length > 2){
 					toggle.enable();
@@ -1635,14 +1914,19 @@
 
 		document.getElementById("overlay").style.display= 'none' ;
 		document.getElementById("overlay2").style.display= 'none' ;
+		$(".leaflet-geosearch-bar").css('top', 0);
 
 		function hideWpList(){
 			document.getElementById("overlay").style.display= 'none' ;
 			document.getElementById("overlay2").style.display= 'none' ;
+			$(".leaflet-geosearch-bar").css('top', 0);
 		}
 
 		function showWpList(){
 			document.getElementById("overlay").style.display= 'block' ;
+			//$("leaflet-geosearch-bar").css({ top: '100px' });
+			$(".leaflet-geosearch-bar").css('top', 72);
+			
 			if (startlineShow == true){
 				document.getElementById("overlay2").style.display= 'block' ;
 			}
@@ -1752,10 +2036,12 @@
 
 		function setWind(direction, speed) {
 			$('i#arrow').css('transform', 'rotate(' + Math.round(direction) + 'deg)');
-			$('.backButton').text(Math.round(speed) + ' kt');
+			$('.backButton').text(Math.round(speed) + ' kts');
 		}
 
 		function teleport(lat, lng) {
+			var x = document.getElementById("keyboard");
+			x.style.display = "none";
 			var altInput = parseFloat(document.getElementById('altitudeInput').value);
 			var headingInput = parseFloat(document.getElementById('headingInput').value);
 			var speedInput = parseFloat(document.getElementById('speedInput').value);
@@ -1764,12 +2050,31 @@
 				map.removeLayer(newMarker);
 			}
 		}
+
+		function geoTeleport() {
+			var x = document.getElementById("keyboard");
+			x.style.display = "none";
+			var altInput = parseFloat(document.getElementById('altitudeInput').value);
+			var headingInput = parseFloat(document.getElementById('headingInput').value);
+			var speedInput = parseFloat(document.getElementById('speedInput').value);
+			postMessage('map:' + geosearchLng + '_' + geosearchLat + '_' + Math.round(altInput) + '_' + Math.round(headingInput) + '_' + Math.round(speedInput));
+			pLineGroup.clearLayers();
+			if (map.hasLayer(polyline)) {
+				map.removeLayer(polyline);
+			}
+			polylinepoints = [];
+			polyline = [];
+			if (showPath == true){
+			polyline = L.polyline(polylinepoints).addTo(map);
+				map.addLayer(polyline);
+			}
+		}
     
 		// Receive controls from parent page
 		function receiveMessage(e) {
 			if (browserDebug == 0) {
 				var request = e.data;
-				//console.log(e.data);
+				console.log(e.data);
 				// Call function:
 				var latlng = request.split("_");
 				altitude = (latlng[2]);
@@ -1778,6 +2083,11 @@
 				$('#map').css('height', latlng[7] - 10 + 'px');
 				$('body').css('height', latlng[7] - 10 + 'px');
 				$('html').css('height', latlng[7] - 10 + 'px');
+				document.documentElement.style.setProperty('--light', latlng[8]);
+				document.documentElement.style.setProperty('--dark', latlng[9]);
+				document.documentElement.style.setProperty('--fontLight', latlng[10]);
+				document.documentElement.style.setProperty('--fontDark', latlng[11]);	
+
 				setPosition(latlng[0], latlng[1]);
 				setRotation(heading);
 				setWind(latlng[5], latlng[6]);
@@ -1794,6 +2104,400 @@
 				//console.log('Postmessage send: ' + message);
 			}
 		}
+
+		// Keyboard
+		var id2 = '';
+		var saveVal;
+		var textstart = '';
+		var textend = '';
+		var capslock = false;
+				const Keyboard = {
+					elements: {
+						main: null,
+						keysContainer: null,
+						keys: []
+					},
+	
+					eventHandlers: {
+						oninput: null,
+						//onclose: null
+					},
+	
+					properties: {
+						value: "",
+						capsLock: false
+					},
+					
+					init() {	
+						// Create main elements       
+						this.elements.main = document.createElement("div");
+						this.elements.main.setAttribute("id", "keyboard");
+						this.elements.keysContainer = document.createElement("div");
+						this.elements.keysContainer.setAttribute("id", "keyContainer");
+					
+						// Setup main elements
+						this.elements.main.classList.add("keyboard", "keyboard--hidden");
+						this.elements.keysContainer.classList.add("keyboard__keys");
+						this.elements.keysContainer.appendChild(this._createKeys());
+						this.elements.keys = this.elements.keysContainer.querySelectorAll(".keyboard__key");
+						
+						// Add to DOM
+						this.elements.main.appendChild(this.elements.keysContainer);
+						document.getElementById("keyb").appendChild(this.elements.main);
+						
+						// Automatically use keyboard for elements with .use-keyboard-input
+						document.querySelectorAll(".glass ").forEach(element => {
+							element.addEventListener("focus", () => {
+								id = element.id;				
+								this.open(element.value, currentValue => {
+									element.value = currentValue;
+								});
+								textstart ='';
+								textend = '';
+							});
+	
+							element.addEventListener("click", () => {
+									var text = element.value;
+									textstart = text.slice(0, element.selectionStart);
+									textend = text.slice(element.selectionEnd, element.value.length);
+									this.properties.value = textstart;
+							});
+	
+							element.addEventListener("select", () => {
+									var text = element.value;
+									textstart = text.slice(0, element.selectionStart);
+									textend = text.slice(element.selectionEnd,element.value.length);
+									this.properties.value = textstart;
+							});
+						});
+					},
+	
+					_createKeys() {
+						const fragment = document.createDocumentFragment();
+						const keyLayout = [
+							
+							"1", "2", "3", "4", "5", "6", "7", "8", "9", "0", ".", "backspace",
+							"q", "w", "e", "r", "t", "y", "u", "i", "o", "p",
+							"a", "s", "d", "f", "g", "h", "j", "k", "l", "enter",
+							"caps", "z", "x", "c", "v", "b", "n", "m",
+							"done", "space", "clear"
+						];
+	 
+						// Creates HTML for an icon
+						const createIconHTML = (icon_name) => {
+							return `<i class="material-icons">${icon_name}</i>`;
+						};
+	
+						keyLayout.forEach(key => {
+							const keyElement = document.createElement("button");
+							const insertLineBreak = ["backspace", "p", "enter", "m"].indexOf(key) !== -1;
+	
+							// Add attributes/classes
+							keyElement.setAttribute("type", "button");
+							keyElement.classList.add("keyboard__key");
+	
+							switch (key) {
+								case "backspace":
+									keyElement.classList.add("keyboard__key--wide");
+									keyElement.innerHTML = createIconHTML("Bksp");
+									keyElement.addEventListener("click", () => {
+									if (window.getSelection().toString() == '') {
+										this.properties.value = this.properties.value.substring(0, this.properties.value.length - 1);
+									}
+										this._triggerEvent("oninput");
+									});
+									break;
+								case "caps":
+									keyElement.classList.add("keyboard__key--wide", "keyboard__key--activatable");
+									keyElement.innerHTML = createIconHTML("Shift");
+									keyElement.addEventListener("click", () => {
+										this._toggleCapsLock();
+										keyElement.classList.toggle("keyboard__key--active", this.properties.capsLock);
+									});
+									break;
+								case "enter":
+									keyElement.classList.add("keyboard__key--wide");
+									keyElement.innerHTML = createIconHTML("Enter");
+									keyElement.addEventListener("click", () => {
+										this.properties.value += "\n";
+										this._triggerEvent("oninput");
+									});
+									break;
+								case "space":
+									keyElement.classList.add("keyboard__key--extra-wide");
+									keyElement.innerHTML = createIconHTML("Space");
+	
+									keyElement.addEventListener("click", () => {
+										this.properties.value += " ";
+										this._triggerEvent("oninput");
+									});
+									break;
+								case "done":
+									keyElement.classList.add("keyboard__key--wide", "keyboard__key--dark");
+									keyElement.innerHTML = createIconHTML("Close");
+	
+									keyElement.addEventListener("click", () => {
+										var x = document.getElementById("keyboard");
+										x.style.display = "none";
+									});
+									break;
+								case "rwy":
+									keyElement.classList.add("keyboard__key--spezial", "keyboard__key--dark");
+									keyElement.innerHTML = createIconHTML("RWY");
+									keyElement.addEventListener("click", () => {
+										this.properties.value += "Runway: ";
+										this._triggerEvent("oninput");
+									});
+									break;
+								case "sqwk":
+									keyElement.classList.add("keyboard__key--spezial", "keyboard__key--dark");
+									keyElement.innerHTML = createIconHTML("SQWK");
+									keyElement.addEventListener("click", () => {
+										this.properties.value += "Squawk: ";
+										this._triggerEvent("oninput");
+									});
+									break;
+								case "ent":
+									keyElement.classList.add("keyboard__key--spezial", "keyboard__key--dark");
+									keyElement.innerHTML = createIconHTML("ENTR");
+									keyElement.addEventListener("click", () => {
+										this.properties.value += "Entry: ";
+										this._triggerEvent("oninput");
+									});
+									break;
+								case "fl":
+									keyElement.classList.add("keyboard__key--spezial", "keyboard__key--dark");
+									keyElement.innerHTML = createIconHTML("FL");
+									keyElement.addEventListener("click", () => {
+										this.properties.value += "Flightlevel: ";
+										this._triggerEvent("oninput");
+									});
+									break;
+								case "clear":
+									keyElement.classList.add("keyboard__key--spezial", "keybord__key--clear");
+									keyElement.innerHTML = createIconHTML("Clear");
+									keyElement.addEventListener("click", () => {
+										this.properties.value = "";
+										this._triggerEvent("oninput");
+									});
+									break;
+								case "clearAll":
+									keyElement.classList.add("keyboard__key--wide", "keybord__key--clear");
+									keyElement.innerHTML = createIconHTML("Reset");
+									keyElement.addEventListener("click", () => {
+									
+									});
+									break;
+								default:
+									keyElement.textContent = key.toLowerCase();
+	
+									keyElement.addEventListener("click", () => {
+										//this.properties.value += this.properties.capsLock ? key.toUpperCase() : key.toLowerCase();
+										
+										if (capslock==true){
+	
+											if (key == 1){
+												this.properties.value += "-";
+											}
+											else if (key == 2){
+												this.properties.value += "+";
+											}
+											else if (key == 3){
+												this.properties.value += "\xB0";
+											}
+											else if (key == 4){
+												this.properties.value += "'";
+											}
+											else if (key == 5){
+												this.properties.value += "''";
+											}
+											else if (key == 6){
+												this.properties.value += "(";
+											}
+											else if (key == 7){
+												this.properties.value += ")";
+											}
+											else if (key == 8){
+												this.properties.value += "/";
+											}
+											else if (key == 9){
+												this.properties.value += "!";
+											}
+											else if (key == 0){
+												this.properties.value += ":";
+											}
+											else if (key == "."){
+												this.properties.value += ".";
+											}
+											else{
+												this.properties.value += this.properties.capsLock ? key.toUpperCase() : key.toLowerCase();
+											}
+										}
+										else{
+											this.properties.value += this.properties.capsLock ? key.toUpperCase() : key.toLowerCase();
+										}
+										
+										//this.properties.value += this.properties.capsLock ? key.toUpperCase() : key.toLowerCase();
+										this._triggerEvent("oninput");
+										keyPress(key);
+									});
+									break;
+	
+							}
+							fragment.appendChild(keyElement);
+							if (insertLineBreak) {
+								fragment.appendChild(document.createElement("br"));
+							}
+						});
+						return fragment;
+					},
+	
+					_triggerEvent(handlerName) {
+						if (typeof this.eventHandlers[handlerName] == "function") {
+							if (textend != ''){
+								this.eventHandlers[handlerName](this.properties.value + textend);
+							}
+							else{
+								this.eventHandlers[handlerName](this.properties.value);
+							}
+						}
+					},
+					
+					_toggleCapsLock() {	
+						capslock = !capslock;
+						this.properties.capsLock = !this.properties.capsLock;
+						for (const key of this.elements.keys) {
+							if (key.childElementCount === 0) {
+								key.textContent = this.properties.capsLock ? key.textContent.toUpperCase() : key.textContent.toLowerCase();
+								this.properties.capsLock ? keyContSpecial() : keyContNormal();
+								function  keyContSpecial() {
+									if (key.textContent == 1){
+									key.textContent = "-";
+									}
+									if (key.textContent == 2){
+									key.textContent = "+";
+									}
+									if (key.textContent == 3){
+									key.textContent = "\xB0";
+									}
+									if (key.textContent == 4){
+									key.textContent = "'";
+									}
+									if (key.textContent == 5){
+									key.textContent = "''";
+									}
+									if (key.textContent == 6){
+									key.textContent = "(";
+									}
+									if (key.textContent == 7){
+									key.textContent = ")";
+									}
+									if (key.textContent == 8){
+									key.textContent = "/";
+									}
+									if (key.textContent == 9){
+									key.textContent = "!";
+									}
+									if (key.textContent == 0){
+									key.textContent = ":";
+									}
+									if (key.textContent == "."){
+									key.textContent = ".";
+									}
+								}
+								function  keyContNormal() {
+									if (key.textContent == "-"){
+									key.textContent = 1;
+									}
+									if (key.textContent == "+"){
+									key.textContent = 2;
+									}
+									if (key.textContent == "\xB0"){
+									key.textContent = 3;
+									}
+									if (key.textContent == "'"){
+									key.textContent = 4;
+									}
+									if (key.textContent == "''"){
+									key.textContent = 5;
+									}
+									if (key.textContent == "("){
+									key.textContent = 6;
+									}
+									if (key.textContent == ")"){
+									key.textContent = 7;
+									}
+									if (key.textContent == "/"){
+									key.textContent = 8;
+									}
+									if (key.textContent == "!"){
+									key.textContent = 9;
+									}
+									if (key.textContent == ":"){
+									key.textContent = 0;
+									}
+									if (key.textContent == "."){
+									key.textContent = ".";
+									}
+								}
+							}
+						}
+					},
+					open(initialValue, oninput/*, onclose*/) {
+						this.properties.value = initialValue || "";
+						this.eventHandlers.oninput = oninput;
+						this.elements.main.classList.remove("keyboard--hidden");
+						var x = document.getElementById("keyboard");
+						x.style.display = "block";
+						var x2 = document.getElementById("keyContainer");
+						x2.style.display = "block";
+						hideWpList();
+					},
+					close() {
+						this.properties.value = "";
+						this.eventHandlers.oninput = oninput;
+						this.elements.main.classList.add("keyboard--hidden");
+						var x = document.getElementById("keyboard");
+						x.style.display = "none";
+						var x2 = document.getElementById("keyContainer");
+						x2.style.display = "none";
+					}
+				};
+
+				function keyPress(char){
+					// get the element in question
+					const input = document.getElementsByTagName("input")[0];
+					// focus on the input element
+					input.focus();
+
+					// add event listeners to the input element
+					input.addEventListener('keypress', (event) => {
+						console.log("You have pressed key: ", event.key);
+					});
+
+					input.addEventListener('keydown', (event) => {
+						console.log(`key: ${event.key} has been pressed down`);
+					});
+
+					input.addEventListener('keyup', (event) => {
+						console.log(`key: ${event.key} has been released`);
+					});
+
+					// dispatch keyboard events
+					input.dispatchEvent(new KeyboardEvent('keypress',  {'key': char}));
+					input.dispatchEvent(new KeyboardEvent('keydown',  {'key':char}));
+					input.dispatchEvent(new KeyboardEvent('keyup', {'key': char}));
+				}
+
+
+
+				const box = document.querySelector('#keyb');
+				box.addEventListener('click', function (e) {
+					e.stopPropagation();
+				});
+				box.addEventListener('dblclick', function (e) {
+					e.stopPropagation();
+				});
 
     </script>
 
