@@ -1004,37 +1004,33 @@
 
 		function loadMap(lat, lon){
 
-		// Create Leaflet map on map element.
+			// Create Leaflet map on map element.
+			var initMapCenter = [47.442, 8.23];
+			var initMapZoom = 10;
+			var southWest = new L.LatLng(-90, -180),
+			northEast = new L.LatLng(90, 180),
+			maxExtent = new L.LatLngBounds(southWest, northEast);
 
-		var initMapCenter = [47.442, 8.23];
-		var initMapZoom = 10;
-		var southWest = new L.LatLng(-90, -180),
-		northEast = new L.LatLng(90, 180),
-		maxExtent = new L.LatLngBounds(southWest, northEast);
-
-		var streets = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {attribution: '&copy; <a href="http://openstreetmap.org/copyright">OpenStreetMap</a>',
-				maxZoom: 18,
-				minZoom: 4,
-				format: 'image/png',
-				transparent: true,
-				subdomains: ['a', 'b', 'c']
+			var streets = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {attribution: 'Map tiles by: <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors)',
+				maxZoom: 17,
+				minZoom: 2,
 			});
 
-		var monochrome = L.tileLayer('http://{s}.tile.stamen.com/toner/{z}/{x}/{y}.{ext}', {attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, under <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>. Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, under <a href="http://www.openstreetmap.org/copyright">ODbL</a>.',
+			var monochrome = L.tileLayer('http://{s}.tile.stamen.com/toner/{z}/{x}/{y}.{ext}', {attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, under <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>. Data by <a href="http://openstreetmap.org"> OpenStreetMap </a>, under <a href="http://www.openstreetmap.org/copyright">ODbL</a>.',
 				ext: 'png',
 				minZoom: 0,
 				maxZoom: 14,
 				subdomains: 'abcd'
 			});
 
-		var terrain = L.tileLayer('http://{s}.tile.stamen.com/terrain/{z}/{x}/{y}.{ext}', {attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, under <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>. Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, under <a href="http://www.openstreetmap.org/copyright">ODbL</a>.',	
+			var terrain = L.tileLayer('http://{s}.tile.stamen.com/terrain/{z}/{x}/{y}.{ext}', {attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, under <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>. Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, under <a href="http://www.openstreetmap.org/copyright">ODbL</a>.',	
 				ext: 'png',
 				minZoom: 0,
 				maxZoom: 14,
 				subdomains: 'abcd'
 			});
 
-		var water = L.tileLayer('http://{s}.tile.stamen.com/watercolor/{z}/{x}/{y}.{ext}', 
+			var water = L.tileLayer('http://{s}.tile.stamen.com/watercolor/{z}/{x}/{y}.{ext}', 
 				{attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, under <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>. Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, under <a href="http://creativecommons.org/licenses/by-sa/3.0">CC BY SA</a>.',
 				ext: 'png',
 				minZoom: 0,
@@ -1042,8 +1038,8 @@
 				subdomains: 'abcd'
 			});
 
-		var airspaces = L.tileLayer('http://{s}.tile.maps.openaip.net/geowebcache/service/tms/1.0.0/openaip_basemap@EPSG%3A900913@png/{z}/{x}/{y}.{ext}', {
-				attribution: '<a href="https://www.openaip.net/">openAIP Data</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-NC-SA</a>)',
+			var airspaces = L.tileLayer('http://{s}.tile.maps.openaip.net/geowebcache/service/tms/1.0.0/openaip_basemap@EPSG%3A900913@png/{z}/{x}/{y}.{ext}', {
+				attribution: '<a href="https://www.openaip.net/">openAIP Data </a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-NC-SA</a>)',
 				ext: 'png',
 				maxZoom: 12,
 				minZoom: 8,
@@ -1054,73 +1050,58 @@
 				transparent: true
 			});
 
-		var openaip_cached_hotspot = new L.TileLayer('http://{s}.tile.maps.openaip.net/geowebcache/service/tms/1.0.0/openaip_approved_hotspots@EPSG%3A900913@png/{z}/{x}/{y}.png', {
-			maxZoom: 14,
-			minZoom: 10,
-			tms: true,
-			detectRetina: true,
-			subdomains: '12',
-			format: 'image/png',
-			transparent: true
-		});
+			var openaip_cached_hotspot = new L.TileLayer('http://{s}.tile.maps.openaip.net/geowebcache/service/tms/1.0.0/openaip_approved_hotspots@EPSG%3A900913@png/{z}/{x}/{y}.png', {
+				maxZoom: 14,
+				minZoom: 10,
+				tms: true,
+				detectRetina: true,
+				subdomains: '12',
+				format: 'image/png',
+				transparent: true
+			});			
 
-
-		var none = L.tileLayer('http://{s}./{z}/{x}/{y}.{ext}', {
+			var none = L.tileLayer('http://{s}./{z}/{x}/{y}.{ext}', {
 				ext: 'png',
 				tms: true,
 				minZoom: 100,
 				maxZoom: 100,
-				});
+			});
 
-		var baseMaps = {
-			"Streets": streets,
-			"Monochrome": monochrome,
-			"Terrain": terrain,
-			"Water": water
-		}
+			var baseMaps = {
+				"Streets": streets,
+				"Monochrome": monochrome,
+				"Terrain": terrain,
+				"Water": water
+			}
 
-		var groupedOverlays = {
-			"Airspaces" : {
-				'On': airspaces,
-				'Off': none
-			},
-		};
+			var groupedOverlays = {
+				"Airspaces" : {
+					'On': airspaces,
+					'Off': none
+				},
+			};
 
-		var baseMaps = {
-			"Streets": streets,
-			"Monochrome": monochrome,
-			"Terrain": terrain,
-			"Water": water
-		}
+			var options = {
+				// Make the "Landmarks" group exclusive (use radio inputs)
+				exclusiveGroups: ["Airspaces"],
+				// Show a checkbox next to non-exclusive group labels for toggling all
+				groupCheckboxes: true
+			};
 
-		var groupedOverlays = {
-			"Airspaces" : {
-				'On': airspaces,
-				'Off': none
-			},
-		};
+			// Where you want to render the map.
+			var element = document.getElementById('map');
 
-		var options = {
-			// Make the "Landmarks" group exclusive (use radio inputs)
-			exclusiveGroups: ["Airspaces"],
-			// Show a checkbox next to non-exclusive group labels for toggling all
-			groupCheckboxes: true
-		};
+			var openaip_basemap_osm = L.featureGroup([streets, airspaces, openaip_cached_hotspot]);
 
-		// Where you want to render the map.
-		var element = document.getElementById('map');
+			map = L.map('map', {
+				center: [49.47211425492292, 9.040833186453408],
+				zoom: 8,
+				edgeBufferTiles: 3,
+				layers: [openaip_basemap_osm],
+				bounds: maxExtent
+			});
 
-		var openaip_basemap_osm = L.featureGroup([streets, airspaces, openaip_cached_hotspot]);
-
-		map = L.map('map', {
-			center: [49.47211425492292, 9.040833186453408],
-			zoom: 8,
-			edgeBufferTiles: 3,
-			layers: [openaip_basemap_osm],
-			bounds: maxExtent
-		});
-
-		L.control.scale({maxWidth: 100}).addTo(map);
+			L.control.scale({maxWidth: 100}).addTo(map);
 
 			GeoSearchControl = window.GeoSearch.GeoSearchControl;
 			AlgoliaProvider = window.GeoSearch.AlgoliaProvider;
@@ -1189,7 +1170,6 @@
 			var geojsonFeature;
 			var id = 0;
 			
-
 			map.on('click', function(e) {
 				if (waypointmode==false){
 					
@@ -1618,7 +1598,7 @@
 			}).addTo(map);
 
 			loadPoints();
-			map.invalidateSize();
+			//map.invalidateSize();
 
 			map.on("dragstart", function(e) {
 				toggle.enable();
